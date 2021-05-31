@@ -1,0 +1,5 @@
+name: 'Whitelist Flood Ip'
+type: module
+description: 'Whitelist specific flood IP addresses.'
+core: 8.x
+package: 'Custom'

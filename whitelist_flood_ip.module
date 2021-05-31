@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains whitelist_flood_ip.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function whitelist_flood_ip_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the whitelist_flood_ip module.
+    case 'help.page.whitelist_flood_ip':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Whitelist specific IP addresses from flooding.') . '</p>';
+      return $output;
+
+    default:
+  }
+}

@@ -1,0 +1,9 @@
+whitelist_flood_ip.whitelist_ip_form:
+  path: '/admin/config/whitelist_flood_ip/whitelist-ip'
+  defaults:
+    _form: '\Drupal\whitelist_flood_ip\Form\WhitelistIpForm'
+    _title: 'Whitelist IP Addresses'
+  requirements:
+    _permission: 'access administration pages'
+  options:
+    _admin_route: TRUE

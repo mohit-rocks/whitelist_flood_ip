@@ -1,0 +1,10 @@
+services:
+  logger.channel.whitelist_flood_ip:
+    parent: logger.channel_base
+    arguments: ['whitelist_flood_ip']
+  whitelist_flood_ip.decorator:
+    class: Drupal\whitelist_flood_ip\FloodWhitelistDecorator
+    decorates: flood
+    public: false
+    arguments: ['@database', '@request_stack', '@config.factory', '@whitelist_flood_ip.decorator.inner']
+    decoration_priority: 10
