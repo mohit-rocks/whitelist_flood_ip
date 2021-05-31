@@ -69,20 +69,29 @@ class FloodWhitelistDecorator implements FloodInterface {
    *
    * @param string $identifier
    *   IP address.
+   *
+   * @return bool
+   *   TRUE if ip address is whitelisted, FALSE otherwise.
    */
   public function checkWhitelistedIp($identifier) {
+    $ip_address = '';
     if (filter_var($identifier, FILTER_VALIDATE_IP)) {
       $ip_address = $identifier;
     }
     else {
-      list($uid, $ip_address) = explode('-', $identifier);
+      $identifiers = explode('-', $identifier);
+      // If there is only one item then no need to check for of ip address.
+      // Because in that case it will be user id with the request of "user.password_request_user" event.
+      if (count($identifiers) === 2) {
+        $ip_address = $identifiers[1];
+      }
     }
     $whitelisted_ips = $this->config_factory->get('whitelist_flood_ip.whitelistip')->get('ip_addresses');
     $whitelisted_ips = explode("\r\n", $whitelisted_ips);
-    if (!in_array($ip_address, $whitelisted_ips)) {
-      return FALSE;
+    if (in_array($ip_address, $whitelisted_ips)) {
+      return TRUE;
     }
-    return TRUE;
+    return FALSE;
   }
 
   /**
