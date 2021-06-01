@@ -58,7 +58,7 @@ class FloodWhitelistDecorator implements FloodInterface {
     if (!isset($identifier)) {
       $identifier = $this->requestStack->getCurrentRequest()->getClientIp();
     }
-    $whitelisted = $this->checkWhitelistedIp($identifier);
+    $whitelisted = $this->checkWhitelistedIp($name, $identifier);
     if (!$whitelisted) {
       $this->original_flood_service->register($name, $window, $identifier);
     }
@@ -73,18 +73,13 @@ class FloodWhitelistDecorator implements FloodInterface {
    * @return bool
    *   TRUE if ip address is whitelisted, FALSE otherwise.
    */
-  public function checkWhitelistedIp($identifier) {
+  public function checkWhitelistedIp($name, $identifier) {
+    if ($name !== 'user.failed_login_ip') {
+      return FALSE;
+    }
     $ip_address = '';
     if (filter_var($identifier, FILTER_VALIDATE_IP)) {
       $ip_address = $identifier;
-    }
-    else {
-      $identifiers = explode('-', $identifier);
-      // If there is only one item then no need to check for of ip address.
-      // Because in that case it will be user id with the request of "user.password_request_user" event.
-      if (count($identifiers) === 2) {
-        $ip_address = $identifiers[1];
-      }
     }
     $whitelisted_ips = $this->config_factory->get('whitelist_flood_ip.whitelistip')->get('ip_addresses');
     $whitelisted_ips = explode("\r\n", $whitelisted_ips);
@@ -108,11 +103,14 @@ class FloodWhitelistDecorator implements FloodInterface {
     if (!isset($identifier)) {
       $identifier = $this->requestStack->getCurrentRequest()->getClientIp();
     }
-    $whitelisted = $this->checkWhitelistedIp($identifier);
-    if (!$whitelisted) {
-      $this->original_flood_service->isAllowed($name, $threshold, $window, $identifier);
+    if ($name !== 'user.failed_login_ip') {
+      return $this->original_flood_service->isAllowed($name, $threshold, $window, $identifier);
     }
-    return TRUE;
+    $whitelisted = $this->checkWhitelistedIp($name, $identifier);
+    if ($whitelisted) {
+      return TRUE;
+    }
+    return $this->original_flood_service->isAllowed($name, $threshold, $window, $identifier);
   }
 
   /**
